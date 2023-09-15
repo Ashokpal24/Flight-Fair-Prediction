@@ -1,88 +1,84 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-var options = {
-  weekday: "long",
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-};
+import React, { useState } from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Routes,
+  useNavigate,
+} from "react-router-dom";
+import LoginPage from "./pages/LoginPage";
+import RegistrationPage from "./pages/RegistrationPage";
+import PrivateRoute from "./components/PrivateRoute";
 
-const FlightData = () => {
-  const [flightData, setFlightData] = useState([]);
+function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigateTo = useNavigate();
 
-  const handleError = (image) => {
-    console.log(image);
-    image.target.src =
-      "https://placehold.co/150x100/FFFFFF/000000?text=Flight+LOGO&font=roboto";
+  const handleLogin = () => {
+    const newBool = true;
+    setIsAuthenticated(newBool);
+    console.log(isAuthenticated);
+    navigateTo("/hero");
   };
 
-  const apiUrl =
-    "https://fictional-enigma-gw7pwwx7g9pf9rjq-3001.app.github.dev/api/flights";
-
-  const fetchFlightData = () => {
-    axios
-      .get(apiUrl)
-      .then((response) => {
-        setFlightData(response.data.data);
-        console.log(response.data.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  const handleLogout = () => {
+    const newBool = false;
+    setIsAuthenticated(newBool);
   };
 
   return (
-    <div className=".flex-column ">
-      <h1 style={{ marginBottom: "1rem" }}>Flight Data Retrieval</h1>
-      <button
-        className="btn btn-primary"
-        style={{ marginBottom: "1rem" }}
-        onClick={fetchFlightData}
-      >
-        Press me
-      </button>
-      <h3 style={{ marginBottom: "1rem" }}>Flight Data:</h3>
-      <ol className="list-group list-group">
-        {flightData.map((flight, index) => (
-          <li
-            className="list-group-item d-flex justify-content-around align-items-start"
-            key={index}
-            style={{ paddingBottom: "2rem" }}
+    <div className="App">
+      <nav className="navbar navbar-expand-lg bg-dark navbar-dark">
+        <div className="container-fluid container">
+          <a className="navbar-brand" href="#">
+            Flight App
+          </a>
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarText"
+            aria-controls="navbarText"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
           >
-            <div className="ms-2 me-auto">
-              <img
-                id="img"
-                src={`https://pics.avs.io/150/100/${flight.airline.iata}.png`}
-                onError={handleError}
-              ></img>
-              <div className="fw-bold">Name: {flight.airline.name} </div>
-              <div>
-                Arrival :
-                {String(
-                  new Date(flight.arrival.estimated).toLocaleDateString(
-                    "en-US",
-                    options
-                  )
-                )}{" "}
-                | Airport: {flight.arrival.airport}
-              </div>
-              <div>
-                Departure :{" "}
-                {String(
-                  new Date(flight.departure.estimated).toLocaleDateString(
-                    "en-US",
-                    options
-                  )
-                )}{" "}
-                | Airport: {flight.departure.airport}
-              </div>
-            </div>
-            <span className="badge bg-primary rounded-pill">New</span>
-          </li>
-        ))}
-      </ol>
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse" id="navbarText">
+            {isAuthenticated ? (
+              <button className="btn btn-danger" onClick={handleLogout}>
+                Logout
+              </button>
+            ) : (
+              <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+                <li className="nav-item">
+                  <a className="nav-link" href="/login">
+                    Login
+                  </a>
+                  {/* <Link to="/login">Login</Link> */}
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="/registration">
+                    Registration
+                  </a>
+                  {/* <Link to="/registration">Registration</Link> */}
+                </li>
+              </ul>
+            )}
+          </div>
+        </div>
+      </nav>
+
+      <Routes>
+        <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
+        <Route path="/registration" element={<RegistrationPage />} />
+        <Route
+          path="/hero"
+          element={<PrivateRoute isAuth={isAuthenticated} />}
+        />
+      </Routes>
     </div>
   );
-};
+}
 
-export default FlightData;
+export default App;
