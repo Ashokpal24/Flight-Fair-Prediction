@@ -2,14 +2,15 @@ import axios from "axios";
 
 const apiKey = process.env.API_KEY;
 const apiSecret = process.env.API_SECRET;
+
 const searchParams = {
   originLocationCode: "DEL",
   destinationLocationCode: "BOM",
-  departureDate: "2023-09-24",
-  returnDate: "2023-09-25",
+  departureDate: "2023-09-25",
+  returnDate: "2023-09-26",
   adults: 1,
   currencyCode: "INR",
-  max: 5,
+  max: 10,
 };
 var accessToken;
 
